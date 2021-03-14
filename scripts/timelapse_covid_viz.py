@@ -155,19 +155,15 @@ def convert_to_gif(files_set):
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-# if __name__ == '__main__':
-	# initial_setup(url)
-	# convert_to_gif(filenames)
-	# time.sleep(86400)
-	# while True:
-	# 	get_daily_updates(url)
-	# 	convert_to_gif(filenames)
-	# 	time.sleep(86400)
+if __name__ == '__main__':
+	initial_setup(url)
+	convert_to_gif(filenames)
+	time.sleep(86400)
+	while True:
+		get_daily_updates(url)
+		convert_to_gif(filenames)
+		time.sleep(86400)
 
-
-initial_setup(url)
-convert_to_gif(filenames)
-# get_daily_updates(url)
 
 
 
