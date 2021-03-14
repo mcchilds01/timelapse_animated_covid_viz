@@ -14,6 +14,10 @@ from datetime import date, timedelta
 
 CC BY-NC-ND 2021 by Matthew Childs
 
+Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
+sleeps for 24 hours, and then updates the available data on a daily basis and reproduces the gif with data from the most recent 
+180 days.
+
 """
 
 no_data_countries = ['AIA', 'BMU', 'CYM', 'FRO', 'FLK', 'GIB', 'GRL', 'GGY', 'HKG', 'IMN', 'JEY', 'MAC', 'MSR', 'OWID_NCY', 'SHN', 'TCA']
@@ -149,13 +153,6 @@ def convert_to_gif(files_set):
 
 
 if __name__ == '__main__':
-	"""
-
-	Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
-	sleeps for 24 hours, and then updates the available data on a daily basis and reproduces the gif with data from the most recent 
-	180 days.
-
-	"""
 	initial_setup(url)
 	convert_to_gif(filenames)
 	time.sleep(86400)
