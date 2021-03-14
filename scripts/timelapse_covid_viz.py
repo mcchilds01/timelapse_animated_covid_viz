@@ -11,13 +11,8 @@ from datetime import date, timedelta
 
 
 """
-Documentation
 
-To do:
-
-creative commons license
-
-exception handling 
+CC BY-ND-NC 2021 by Matthew Childs
 
 """
 
@@ -123,6 +118,12 @@ def plot_map(covid_rates_list, date):
 
 
 def get_daily_updates(url):
+	"""
+	
+	Transforms, encodes and plots the data from the most recent day, and adds the .png file to filenames. This new file will eventually be used to
+	produce a new gif, incorporating this data and the preceeding 179 days.
+	
+	"""
 	most_recent = (date.today() - timedelta(1))
 	new_covid_rates = []
 	response = requests.get(url)
@@ -138,11 +139,16 @@ def get_daily_updates(url):
 
 
 def convert_to_gif(files_set):
+	"""
+	
+	Converts 180 .png files containing pygal plots into a timelapse gif. 
+	
+	"""
 	images = [images.append(imageio.imread(filename)) for filename in filenames[-180:]]
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
 	"""
 
 	Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
@@ -150,18 +156,13 @@ def convert_to_gif(files_set):
 	180 days.
 
 	"""
-	# initial_setup(url)
-	# convert_to_gif(filenames)
-	# time.sleep(86400)
-	# while True:
-	# 	get_daily_updates(url)
-	# 	convert_to_gif(filenames)
-	# 	time.sleep(86400)
-
-
-initial_setup(url)
-convert_to_gif(filenames)
-# get_daily_updates(url)
+	initial_setup(url)
+	convert_to_gif(filenames)
+	time.sleep(86400)
+	while True:
+		get_daily_updates(url)
+		convert_to_gif(filenames)
+		time.sleep(86400)
 
 
 
