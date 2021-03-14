@@ -12,13 +12,12 @@ from datetime import date, timedelta
 
 
 """
-Documentation
 
-To do:
+CC BY-NC-ND 2021 by Matthew Childs
 
-creative commons license
-
-exception handling 
+Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
+sleeps for 24 hours, and then updates the available data on a daily basis and reproduces the gif with data from the most recent 
+180 days.
 
 """
 
@@ -145,26 +144,14 @@ def convert_to_gif(files_set):
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-# if __name__ == '__main__':
-	"""
-
-	Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
-	sleeps for 24 hours, and then updates the available data on a daily basis and reproduces the gif with data from the most recent 
-	180 days.
-
-	"""
-	# initial_setup(url)
-	# convert_to_gif(filenames)
-	# time.sleep(86400)
-	# while True:
-	# 	get_daily_updates(url)
-	# 	convert_to_gif(filenames)
-	# 	time.sleep(86400)
-
-
-initial_setup(url)
-convert_to_gif(filenames)
-# get_daily_updates(url)
+if __name__ == '__main__':
+	initial_setup(url)
+	convert_to_gif(filenames)
+	time.sleep(86400)
+	while True:
+		get_daily_updates(url)
+		convert_to_gif(filenames)
+		time.sleep(86400)
 
 
 
