@@ -152,8 +152,6 @@ if __name__ == '__main__':
 		convert_to_gif(filenames)
 		time.sleep(86400)
 
-# url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
-get_daily_updates(url)
 
 
 
