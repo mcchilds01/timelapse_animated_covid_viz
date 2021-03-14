@@ -12,12 +12,13 @@ from datetime import date, timedelta
 
 
 """
+Documentation
 
-CC BY-NC-ND 2021 by Matthew Childs
+To do:
 
-Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
-sleeps for 24 hours, and then updates the available data on a daily basis and reproduces the gif with data from the most recent 
-180 days.
+creative commons license
+
+exception handling 
 
 """
 
@@ -40,11 +41,11 @@ def initial_setup(url):
 	Creates the initial 180-day plot, after which only daily updates are needed. 
 
 	"""
+	new_covid_rates = []
+	response = requests.get(url)
+	r = response.json()
 	for i in range(180, 0, -1):
 		target_date = date.today() - timedelta(i)
-		new_covid_rates = []
-		response = requests.get(url)
-		r = response.json()
 		for country in r.keys():
 			if country not in no_data_countries: 
 				name = r[country]['location']
@@ -109,26 +110,22 @@ def plot_map(covid_rates_list, date):
 	"""
 	COVID_rates_1 = [i for i in covid_rates_list if i['value'][1] < 100000]
 	COVID_rates_2 = [country for country in covid_rates_list if country['value'][1] < 1000000] 
-	COVID_rates_3 = [country for country in covid_rates_list if country['value'][1] >= 1000000]
+	COVID_rates_3 = [country for country in covid_rates_list if country['value'][1] < 10000000]
+	COVID_rates_4 = [country for country in covid_rates_list if country['value'][1] >= 10000000]
 
 	wm_style = RotateStyle('#336699', base_style = LCS)
 	wm = World(style = wm_style)
 	wm.add('< 100000', COVID_rates_1)
 	wm.add('< 1000000', COVID_rates_2)
-	wm.add('>= 1 mil', COVID_rates_3)
+	wm.add('< 10000000', COVID_rates_3)
+	wm.add('>= 10000000', COVID_rates_4)
 	wm.title=f'Total COVID cases by country as of {date}'
-	wm.render_to_png(f'COVID_viz/COVID_vis_frame_{date}.png')
-	filenames.add(f'COVID_viz/COVID_vis_frame_{date}.png')
+	wm.render_to_png(f'GIS_project/COVID_viz/COVID_vis_frame_{date}.png')
+	filenames.add(f'GIS_project/COVID_viz/COVID_vis_frame_{date}.png')
 
 
 
 def get_daily_updates(url):
-	"""
-	
-	Transforms, encodes and plots the data from the most recent day, and adds the .png file to filenames. This new file will eventually be used to
-	produce a new gif, incorporating this data and the preceeding 179 days.
-	
-	"""
 	most_recent = (date.today() - timedelta(1))
 	new_covid_rates = []
 	response = requests.get(url)
@@ -144,23 +141,30 @@ def get_daily_updates(url):
 
 
 def convert_to_gif(files_set):
-	"""
-	
-	Converts 180 .png files containing pygal plots into a timelapse gif. 
-	
-	"""
 	images = [images.append(imageio.imread(filename)) for filename in filenames[-180:]]
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-if __name__ == '__main__':
-	initial_setup(url)
-	convert_to_gif(filenames)
-	time.sleep(86400)
-	while True:
-		get_daily_updates(url)
-		convert_to_gif(filenames)
-		time.sleep(86400)
+# if __name__ == '__main__':
+	"""
+
+	Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
+	sleeps for 24 hours, and then updates the available data on a daily basis and reproduces the gif with data from the most recent 
+	180 days.
+
+	"""
+	# initial_setup(url)
+	# convert_to_gif(filenames)
+	# time.sleep(86400)
+	# while True:
+	# 	get_daily_updates(url)
+	# 	convert_to_gif(filenames)
+	# 	time.sleep(86400)
+
+
+initial_setup(url)
+convert_to_gif(filenames)
+# get_daily_updates(url)
 
 
 
