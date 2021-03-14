@@ -34,7 +34,7 @@ url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
 filenames = set()
 
 
-def initial_setup():
+def initial_setup(url):
 	"""
 
 	Creates the initial 180-day plot, after which only daily updates are needed. 
@@ -49,9 +49,9 @@ def initial_setup():
 			if country not in no_data_countries: 
 				name = r[country]['location']
 				r_df = pd.json_normalize(r[country]['data'])
-				covid_rate_date = r_df.loc[r_df['date'] == str(most_recent)]
-				new_covid_rates.append(transform_data(name, covid_rate_date, most_recent))
-				plot_map(new_covid_rates, most_recent)
+				covid_rate_date = r_df.loc[r_df['date'] == str(target_date)]
+				new_covid_rates.append(transform_data(name, covid_rate_date, target_date))
+				plot_map(new_covid_rates, target_date)
 
 
 def transform_data(country, rates_df, date):
@@ -73,13 +73,19 @@ def createDict(code, country_name, rate):
 	Returns a dict with the information necessary to plot COVID data on the pygal world map.
 
 	"""
-	return { 
+	try: 
+		x = { 
 		'value': (code, int(float(rate))),
 		'label': code,
 		'xlink': 'https://www.google.com/search?q=covid+infection+rate+in+' + country_name,
 		}
-
-
+	except: 
+		x = { 
+		'value': (code, 0),
+		'label': code,
+		'xlink': 'https://www.google.com/search?q=covid+infection+rate+in+' + country_name,
+		}
+	return x
 
 def get_country_code(country_name):
 	"""
@@ -136,7 +142,7 @@ def convert_to_gif(files_set):
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 	"""
 
 	Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
@@ -144,14 +150,18 @@ if __name__ == '__main__':
 	180 days.
 
 	"""
-	initial_setup(url)
-	convert_to_gif(filenames)
-	time.sleep(86400)
-	while True:
-		get_daily_updates(url)
-		convert_to_gif(filenames)
-		time.sleep(86400)
+	# initial_setup(url)
+	# convert_to_gif(filenames)
+	# time.sleep(86400)
+	# while True:
+	# 	get_daily_updates(url)
+	# 	convert_to_gif(filenames)
+	# 	time.sleep(86400)
 
+
+initial_setup(url)
+convert_to_gif(filenames)
+# get_daily_updates(url)
 
 
 
