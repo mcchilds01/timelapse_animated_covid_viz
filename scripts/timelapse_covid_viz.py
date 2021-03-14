@@ -5,6 +5,7 @@ import json
 import requests
 import time 
 import cairosvg
+import imageio
 from pygal.style import LightColorizedStyle as LCS, LightenStyle as LS, RotateStyle
 from pygal.maps.world import COUNTRIES, World 
 from datetime import date, timedelta
