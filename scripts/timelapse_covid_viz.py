@@ -2,21 +2,23 @@ import pygal
 import csv
 import pandas as pd
 import json
+import requests
+import time 
+import cairosvg
 from pygal.style import LightColorizedStyle as LCS, LightenStyle as LS, RotateStyle
 from pygal.maps.world import COUNTRIES, World 
 from datetime import date, timedelta
-import requests
-import time 
+
 
 """
+Documentation
+
+To do:
+
 creative commons license
 
+exception handling 
 
-
-To do: 
-
-	- Create a dict of countries not processed by pygal maps, replace the ugly 'Russia' solution
-	- Normalize? 
 """
 
 no_data_countries = ['AIA', 'BMU', 'CYM', 'FRO', 'FLK', 'GIB', 'GRL', 'GGY', 'HKG', 'IMN', 'JEY', 'MAC', 'MSR', 'OWID_NCY', 'SHN', 'TCA']
@@ -29,23 +31,34 @@ convert_countries = {'Russia': 'Russian Federation', 'Iran': 'Iran, Islamic Repu
 
 url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
 
+filenames = set()
 
 
 def initial_setup():
 	"""
+
 	Creates the initial 180-day plot, after which only daily updates are needed. 
+
 	"""
 	for i in range(180, 0, -1):
 		target_date = date.today() - timedelta(i)
-		filename = 'owid-covid-data.csv'		
-		COVID_rates = parse_data(filename, target_date)
-		plot_map(COVID_rates, target_date)
-
+		new_covid_rates = []
+		response = requests.get(url)
+		r = response.json()
+		for country in r.keys():
+			if country not in no_data_countries: 
+				name = r[country]['location']
+				r_df = pd.json_normalize(r[country]['data'])
+				covid_rate_date = r_df.loc[r_df['date'] == str(most_recent)]
+				new_covid_rates.append(transform_data(name, covid_rate_date, most_recent))
+				plot_map(new_covid_rates, most_recent)
 
 
 def transform_data(country, rates_df, date):
 	"""
+
 	Transforms the original timeseries data to so it is plottable by date by country rather than by country by date. 
+
 	"""
 	try:
 		COVID_rate = createDict(get_country_code(country), country, rates_df['total_cases'].values)
@@ -56,7 +69,9 @@ def transform_data(country, rates_df, date):
 
 def createDict(code, country_name, rate):
 	"""
+
 	Returns a dict with the information necessary to plot COVID data on the pygal world map.
+
 	"""
 	return { 
 		'value': (code, int(float(rate))),
@@ -68,21 +83,23 @@ def createDict(code, country_name, rate):
 
 def get_country_code(country_name):
 	"""
+
 	Return the Pygal 2-digit country code for the given country.
+
 	"""
 	if country_name in convert_countries.keys():
 		country_name = convert_countries[country_name]
 	for code, name in COUNTRIES.items():
 		if country_name == name:
 			return code 
-	# if country_name not in COUNTRIES.values():
-	# 	print(f'problem with {country_name}')
 
 
 
 def plot_map(covid_rates_list, date):
 	"""
-	Creates a .png-format plot of the COVID infection rate data, using the pygal WORLD shapefile, classed based on 
+
+	Creates a .png-format plot of the COVID infection rate data, using the pygal WORLD shapefile, classed based on number of cases
+
 	"""
 	COVID_rates_1 = [i for i in covid_rates_list if i['value'][1] < 100000]
 	COVID_rates_2 = [country for country in covid_rates_list if country['value'][1] < 1000000] 
@@ -94,7 +111,8 @@ def plot_map(covid_rates_list, date):
 	wm.add('< 1000000', COVID_rates_2)
 	wm.add('>= 1 mil', COVID_rates_3)
 	wm.title=f'Total COVID cases by country as of {date}'
-	wm.render_to_file(f'COVID_vis_final_{date}.svg')
+	wm.render_to_png(f'COVID_viz/COVID_vis_frame_{date}.png')
+	filenames.add(f'COVID_viz/COVID_vis_frame_{date}.png')
 
 
 
@@ -113,16 +131,28 @@ def get_daily_updates(url):
 
 
 
-def convert_to_gif():
-	XXXXXXXX
-
+def convert_to_gif(files_set):
+	images = [images.append(imageio.imread(filename)) for filename in filenames[-180:]]
+	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
 if __name__ == '__main__':
-	get_daily_updates(url)
-# 	time.sleep(86400)
+	"""
 
-url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
+	Performs initial set-up by creating a gif of the most recent 180 days worth of COVID intection rate data. The program then 
+	sleeps for 24 hours, and then updates the available data on a daily basis and reproduces the gif with data from the most recent 
+	180 days.
+
+	"""
+	initial_setup(url)
+	convert_to_gif(filenames)
+	time.sleep(86400)
+	while True:
+		get_daily_updates(url)
+		convert_to_gif(filenames)
+		time.sleep(86400)
+
+# url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
 get_daily_updates(url)
 
 
