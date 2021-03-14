@@ -125,14 +125,12 @@ def plot_map(covid_rates_list, date):
 
 
 def get_daily_updates(url):
-	
 	"""
 	
 	Transforms, encodes and plots the data from the most recent day, and adds the .png file to filenames. This new file will eventually be used to
 	produce a new gif, incorporating this data and the preceeding 179 days.
 	
 	"""
-
 	most_recent = (date.today() - timedelta(1))
 	new_covid_rates = []
 	response = requests.get(url)
@@ -157,14 +155,19 @@ def convert_to_gif(files_set):
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-if __name__ == '__main__':
-	initial_setup(url)
-	convert_to_gif(filenames)
-	time.sleep(86400)
-	while True:
-		get_daily_updates(url)
-		convert_to_gif(filenames)
-		time.sleep(86400)
+# if __name__ == '__main__':
+	# initial_setup(url)
+	# convert_to_gif(filenames)
+	# time.sleep(86400)
+	# while True:
+	# 	get_daily_updates(url)
+	# 	convert_to_gif(filenames)
+	# 	time.sleep(86400)
+
+
+initial_setup(url)
+convert_to_gif(filenames)
+# get_daily_updates(url)
 
 
 
