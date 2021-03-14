@@ -12,7 +12,7 @@ from datetime import date, timedelta
 
 """
 
-CC BY-ND-NC 2021 by Matthew Childs
+CC BY-NC-ND 2021 by Matthew Childs
 
 """
 
