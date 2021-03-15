@@ -34,6 +34,18 @@ url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
 filenames = set()
 
 
+def initial_setup(url, file_format='csv'):
+	"""
+	
+	Allows user to select source format for initial setup; file_format parameter can take either 'json' or 'csv' as an argument, with 'csv' as default. 
+	
+	"""
+	if file_format = 'json':
+		initial_setup_from_json(url)
+	else: initial_setup_from_csv(url)
+
+
+		
 def initial_setup_from_json(url):
 	"""
 
@@ -53,6 +65,8 @@ def initial_setup_from_json(url):
 				new_covid_rates.append(transform_data(name, covid_rate_date, target_date))
 		plot_map(new_covid_rates, target_date)
 
+		
+		
 def initial_setup_from_csv(url):
 	"""
 
@@ -71,6 +85,8 @@ def initial_setup_from_csv(url):
 				new_covid_rates.append(transform_data(str(country), covid_rate_date))
 		plot_map(new_covid_rates, target_date)
 
+		
+		
 def transform_data(country, rates):
 	"""
 
@@ -103,6 +119,8 @@ def createDict(code, country_name, rate):
 		'xlink': 'https://www.google.com/search?q=covid+infection+rate+in+' + country_name,
 		}
 	return x
+
+
 
 def get_country_code(country_name):
 	"""
@@ -172,19 +190,12 @@ def convert_to_gif(files_set):
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-# if __name__ == '__main__':
-	# initial_setup(url)
-	# convert_to_gif(filenames)
-	# time.sleep(86400)
-	# while True:
-	# 	get_daily_updates(url)
-	# 	convert_to_gif(filenames)
-	# 	time.sleep(86400)
-
-
-initial_setup_from_csv(url)
-convert_to_gif(filenames)
-# get_daily_updates(url)
-
-
+if __name__ == '__main__':
+	initial_setup(url, file_format='csv')
+	convert_to_gif(filenames)
+	time.sleep(86400)
+	while True:
+		get_daily_updates(url)
+		convert_to_gif(filenames)
+		time.sleep(86400)
 
