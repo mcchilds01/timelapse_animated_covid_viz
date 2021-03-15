@@ -7,7 +7,7 @@ import time
 import cairosvg
 import imageio
 from os import listdir
-from pygal.style import LightColorizedStyle as LCS, LightenStyle as LS, CleanStyle as CS, DefaultStyle as DS, RotateStyle
+from pygal.style import DefaultStyle as DS, RotateStyle
 from pygal.maps.world import COUNTRIES, World 
 from datetime import date, timedelta
 
@@ -139,14 +139,17 @@ def plot_map(covid_rates_list, date):
 	COVID_rates_1 = [i for i in covid_rates_list if i['value'][1] < 100000]
 	COVID_rates_2 = [country for country in covid_rates_list if country['value'][1] < 1000000] 
 	COVID_rates_3 = [country for country in covid_rates_list if country['value'][1] < 10000000]
-	COVID_rates_4 = [country for country in covid_rates_list if country['value'][1] >= 10000000]
+	COVID_rates_4 = [country for country in covid_rates_list if country['value'][1] < 100000000]
+	COVID_rates_5 = [country for country in covid_rates_list if country['value'][1] >= 100000000]
 
 	wm_style = RotateStyle('#336699', base_style = DS, step=5) 
 	wm = World(style = wm_style)
-	wm.add('< 100000', COVID_rates_1)
-	wm.add('< 1000000', COVID_rates_2)
-	wm.add('< 10000000', COVID_rates_3)
-	wm.add('>= 10000000', COVID_rates_4)
+	wm.add('< 100,000', COVID_rates_1)
+	wm.add('< 1,000,000', COVID_rates_2)
+	wm.add('< 10,000,000', COVID_rates_3)
+	wm.add('< 100,000,000', COVID_rates_4)
+	if len(COVID_rates_5) > 1:
+		wm.add('>= 100,000,000', COVID_rates_5)
 	wm.title=f'Total COVID cases by country as of {date}'
 	wm.render_to_png(f'GIS_project/COVID_viz/COVID_vis_frame_{date}.png')
 
@@ -185,16 +188,10 @@ def convert_to_gif():
 
 
 # if __name__ == '__main__':
-# 	initial_setup(url)
-# 	convert_to_gif(filenames)
-# 	time.sleep(86400)
-# 	while True:
-# 		get_daily_updates(url)
-# 		convert_to_gif(filenames)
-# 		time.sleep(86400)
-
-
-initial_setup(url)
-# convert_to_gif()
-
-
+	# initial_setup(url)
+	# convert_to_gif()
+	# time.sleep(86400)
+	while True:
+		get_daily_updates(url)
+		convert_to_gif()
+		time.sleep(86400)
