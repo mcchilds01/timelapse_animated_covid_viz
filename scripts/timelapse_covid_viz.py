@@ -181,7 +181,7 @@ def convert_to_gif():
 	"""
 	filenames = [('GIS_project/COVID_viz/'+f) for f in listdir('GIS_project/COVID_viz') if f[-3:]=='png']
 	images = [imageio.imread(filename) for filename in sorted(list(filenames))[-180:]]
-	imageio.mimsave('GIS_project/COVID_viz/COVID_gif.gif', images)
+	imageio.mimsave(f'GIS_project/COVID_viz/COVID_gif_{date.today()}.gif', images)
 
 
 if __name__ == '__main__':
@@ -192,7 +192,6 @@ if __name__ == '__main__':
 		get_daily_updates(url)
 		convert_to_gif(filenames)
 		time.sleep(86400)
-
 
 
 
