@@ -6,6 +6,7 @@ import requests
 import time 
 import cairosvg
 import imageio
+from os import listdir
 from pygal.style import LightColorizedStyle as LCS, LightenStyle as LS, RotateStyle
 from pygal.maps.world import COUNTRIES, World 
 from datetime import date, timedelta
@@ -31,8 +32,6 @@ convert_countries = {'Russia': 'Russian Federation', 'Iran': 'Iran, Islamic Repu
 
 url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
 
-filenames = set()
-
 
 def initial_setup(url, file_format='csv'):
 	"""
@@ -40,12 +39,13 @@ def initial_setup(url, file_format='csv'):
 	Allows user to select source format for initial setup; file_format parameter can take either 'json' or 'csv' as an argument, with 'csv' as default. 
 	
 	"""
-	if file_format = 'json':
+	if file_format == 'json':
 		initial_setup_from_json(url)
 	else: initial_setup_from_csv(url)
 
 
-		
+
+
 def initial_setup_from_json(url):
 	"""
 
@@ -65,8 +65,6 @@ def initial_setup_from_json(url):
 				new_covid_rates.append(transform_data(name, covid_rate_date, target_date))
 		plot_map(new_covid_rates, target_date)
 
-		
-		
 def initial_setup_from_csv(url):
 	"""
 
@@ -85,8 +83,6 @@ def initial_setup_from_csv(url):
 				new_covid_rates.append(transform_data(str(country), covid_rate_date))
 		plot_map(new_covid_rates, target_date)
 
-		
-		
 def transform_data(country, rates):
 	"""
 
@@ -119,8 +115,6 @@ def createDict(code, country_name, rate):
 		'xlink': 'https://www.google.com/search?q=covid+infection+rate+in+' + country_name,
 		}
 	return x
-
-
 
 def get_country_code(country_name):
 	"""
@@ -155,7 +149,6 @@ def plot_map(covid_rates_list, date):
 	wm.add('>= 10000000', COVID_rates_4)
 	wm.title=f'Total COVID cases by country as of {date}'
 	wm.render_to_png(f'GIS_project/COVID_viz/COVID_vis_frame_{date}.png')
-	filenames.add(f'GIS_project/COVID_viz/COVID_vis_frame_{date}.png')
 
 
 
@@ -174,28 +167,32 @@ def get_daily_updates(url):
 		if country not in no_data_countries: 
 			name = r[country]['location']
 			r_df = pd.json_normalize(r[country]['data'])
-			covid_rate_date = r_df.loc[r_df['date'] == str(most_recent)]
+			covid_rate_date = r_df.loc[r_df['date'] == str(most_recent), 'total_cases']
 			new_covid_rates.append(transform_data(name, covid_rate_date))
-			plot_map(new_covid_rates, most_recent)
+	plot_map(new_covid_rates, most_recent)
 
 
 
-def convert_to_gif(files_set):
+def convert_to_gif():
 	"""
 	
 	Converts 180 .png files containing pygal plots into a timelapse gif. 
 	
 	"""
-	images = [images.append(imageio.imread(filename)) for filename in filenames[-180:]]
-	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
+	filenames = [('GIS_project/COVID_viz/'+f) for f in listdir('GIS_project/COVID_viz') if f[-3:]=='png']
+	images = [imageio.imread(filename) for filename in sorted(list(filenames))[-180:]]
+	imageio.mimsave('GIS_project/COVID_viz/COVID_gif.gif', images)
 
 
 if __name__ == '__main__':
-	initial_setup(url, file_format='csv')
+	initial_setup(url)
 	convert_to_gif(filenames)
 	time.sleep(86400)
 	while True:
 		get_daily_updates(url)
 		convert_to_gif(filenames)
 		time.sleep(86400)
+
+
+
 
