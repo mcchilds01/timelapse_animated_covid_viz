@@ -6,3 +6,4 @@ A gif derived from OWID COVID data. The gif is initialized with 180 days-worth o
 Fine-tuning of the gif appearance is a work in progress. 
 
 ![COVID infection rate Demo](COVID_gif_2021-03-15.gif)
+ 
