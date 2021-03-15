@@ -7,7 +7,7 @@ import time
 import cairosvg
 import imageio
 from os import listdir
-from pygal.style import LightColorizedStyle as LCS, LightenStyle as LS, RotateStyle
+from pygal.style import LightColorizedStyle as LCS, LightenStyle as LS, CleanStyle as CS, DefaultStyle as DS, RotateStyle
 from pygal.maps.world import COUNTRIES, World 
 from datetime import date, timedelta
 
@@ -74,7 +74,7 @@ def initial_setup_from_csv(url):
 	covid_data = pd.read_csv('owid-covid-data.csv')
 	covid_data = covid_data[['iso_code', 'location', 'date', 'total_cases']]
 	countries = list(zip(covid_data.location.unique(), covid_data.iso_code.unique()))
-	for i in range(156, 0, -1):
+	for i in range(180, 0, -1):
 		new_covid_rates = []
 		target_date = date.today() - timedelta(i)
 		for country, code in countries:
@@ -141,7 +141,7 @@ def plot_map(covid_rates_list, date):
 	COVID_rates_3 = [country for country in covid_rates_list if country['value'][1] < 10000000]
 	COVID_rates_4 = [country for country in covid_rates_list if country['value'][1] >= 10000000]
 
-	wm_style = RotateStyle('#336699', base_style = LCS)
+	wm_style = RotateStyle('#336699', base_style = DS, step=5) 
 	wm = World(style = wm_style)
 	wm.add('< 100000', COVID_rates_1)
 	wm.add('< 1000000', COVID_rates_2)
@@ -181,17 +181,20 @@ def convert_to_gif():
 	"""
 	filenames = [('GIS_project/COVID_viz/'+f) for f in listdir('GIS_project/COVID_viz') if f[-3:]=='png']
 	images = [imageio.imread(filename) for filename in sorted(list(filenames))[-180:]]
-	imageio.mimsave(f'GIS_project/COVID_viz/COVID_gif_{date.today()}.gif', images)
+	imageio.mimsave(f'GIS_project/COVID_viz/COVID_gif_{date.today()}.gif', images, duration = 0.75)
 
 
-if __name__ == '__main__':
-	initial_setup(url)
-	convert_to_gif(filenames)
-	time.sleep(86400)
-	while True:
-		get_daily_updates(url)
-		convert_to_gif(filenames)
-		time.sleep(86400)
+# if __name__ == '__main__':
+# 	initial_setup(url)
+# 	convert_to_gif(filenames)
+# 	time.sleep(86400)
+# 	while True:
+# 		get_daily_updates(url)
+# 		convert_to_gif(filenames)
+# 		time.sleep(86400)
 
+
+initial_setup(url)
+# convert_to_gif()
 
 
