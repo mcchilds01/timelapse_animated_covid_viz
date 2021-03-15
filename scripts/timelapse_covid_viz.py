@@ -34,16 +34,16 @@ url ='https://covid.ourworldindata.org/data/owid-covid-data.json'
 filenames = set()
 
 
-def initial_setup(url):
+def initial_setup_from_json(url):
 	"""
 
 	Creates the initial 180-day plot, after which only daily updates are needed. 
 
 	"""
-	new_covid_rates = []
 	response = requests.get(url)
 	r = response.json()
 	for i in range(180, 0, -1):
+		new_covid_rates = []
 		target_date = date.today() - timedelta(i)
 		for country in r.keys():
 			if country not in no_data_countries: 
@@ -51,19 +51,36 @@ def initial_setup(url):
 				r_df = pd.json_normalize(r[country]['data'])
 				covid_rate_date = r_df.loc[r_df['date'] == str(target_date)]
 				new_covid_rates.append(transform_data(name, covid_rate_date, target_date))
-				plot_map(new_covid_rates, target_date)
+		plot_map(new_covid_rates, target_date)
 
+def initial_setup_from_csv(url):
+	"""
 
-def transform_data(country, rates_df, date):
+	Creates the initial 180-day plot, after which only daily updates are needed. 
+
+	"""
+	covid_data = pd.read_csv('owid-covid-data.csv')
+	covid_data = covid_data[['iso_code', 'location', 'date', 'total_cases']]
+	countries = list(zip(covid_data.location.unique(), covid_data.iso_code.unique()))
+	for i in range(156, 0, -1):
+		new_covid_rates = []
+		target_date = date.today() - timedelta(i)
+		for country, code in countries:
+			if code not in no_data_countries: 
+				covid_rate_date = covid_data.loc[(covid_data['location'] == country) & (covid_data['date'] == str(target_date)), 'total_cases']
+				new_covid_rates.append(transform_data(str(country), covid_rate_date))
+		plot_map(new_covid_rates, target_date)
+
+def transform_data(country, rates):
 	"""
 
 	Transforms the original timeseries data to so it is plottable by date by country rather than by country by date. 
 
 	"""
 	try:
-		COVID_rate = createDict(get_country_code(country), country, rates_df['total_cases'].values)
+		COVID_rate = createDict(get_country_code(country), country, rates)
 		return COVID_rate
-	except KeyError: print(f'KeyError for {country}')
+	except KeyError: print(f'Error transforming data for {country}')
 
 
 
@@ -140,7 +157,7 @@ def get_daily_updates(url):
 			name = r[country]['location']
 			r_df = pd.json_normalize(r[country]['data'])
 			covid_rate_date = r_df.loc[r_df['date'] == str(most_recent)]
-			new_covid_rates.append(transform_data(name, covid_rate_date, most_recent))
+			new_covid_rates.append(transform_data(name, covid_rate_date))
 			plot_map(new_covid_rates, most_recent)
 
 
@@ -155,15 +172,19 @@ def convert_to_gif(files_set):
 	imageio.mimsave('COVID_viz/COVID_gif.gif', images)
 
 
-if __name__ == '__main__':
-	initial_setup(url)
-	convert_to_gif(filenames)
-	time.sleep(86400)
-	while True:
-		get_daily_updates(url)
-		convert_to_gif(filenames)
-		time.sleep(86400)
+# if __name__ == '__main__':
+	# initial_setup(url)
+	# convert_to_gif(filenames)
+	# time.sleep(86400)
+	# while True:
+	# 	get_daily_updates(url)
+	# 	convert_to_gif(filenames)
+	# 	time.sleep(86400)
 
+
+initial_setup_from_csv(url)
+convert_to_gif(filenames)
+# get_daily_updates(url)
 
 
 
