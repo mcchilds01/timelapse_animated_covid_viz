@@ -187,10 +187,10 @@ def convert_to_gif():
 	imageio.mimsave(f'GIS_project/COVID_viz/COVID_gif_{date.today()}.gif', images, duration = 0.75)
 
 
-# if __name__ == '__main__':
-	# initial_setup(url)
-	# convert_to_gif()
-	# time.sleep(86400)
+if __name__ == '__main__':
+	initial_setup(url)
+	convert_to_gif()
+	time.sleep(86400)
 	while True:
 		get_daily_updates(url)
 		convert_to_gif()
