@@ -65,6 +65,8 @@ def initial_setup_from_json(url):
 				new_covid_rates.append(transform_data(name, covid_rate_date, target_date))
 		plot_map(new_covid_rates, target_date)
 
+		
+		
 def initial_setup_from_csv(url):
 	"""
 
@@ -83,6 +85,8 @@ def initial_setup_from_csv(url):
 				new_covid_rates.append(transform_data(str(country), covid_rate_date))
 		plot_map(new_covid_rates, target_date)
 
+		
+		
 def transform_data(country, rates):
 	"""
 
@@ -115,6 +119,8 @@ def createDict(code, country_name, rate):
 		'xlink': 'https://www.google.com/search?q=covid+infection+rate+in+' + country_name,
 		}
 	return x
+
+
 
 def get_country_code(country_name):
 	"""
