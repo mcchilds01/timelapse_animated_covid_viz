@@ -197,8 +197,8 @@ def convert_to_gif():
 if __name__ == '__main__':
 	initial_setup()
 	convert_to_gif()
-	# time.sleep(86400)
-	# while True:
-	# 	get_daily_updates(url)
-	# 	convert_to_gif()
-	# 	time.sleep(86400)
+	time.sleep(86400)
+	while True:
+		get_daily_updates(url)
+		convert_to_gif()
+		time.sleep(86400)
