@@ -7,7 +7,7 @@ import time
 import cairosvg
 import imageio
 from os import listdir
-from pygal.style import DefaultStyle as DS, RotateStyle
+from pygal.style import DefaultStyle as DS, RotateStyle, Style
 from pygal.maps.world import COUNTRIES, World 
 from datetime import date, timedelta
 
@@ -145,8 +145,10 @@ def plot_map(covid_rates_list, date):
 	COVID_rates_4 = [country for country in covid_rates_list if country['value'][1] < 100000000]
 	COVID_rates_5 = [country for country in covid_rates_list if country['value'][1] >= 100000000]
 
+	customstyle = Style(colors=('#008000', '#FFFF00', '#FF9633', '#FF0000', '#800080' ))
+
 	wm_style = RotateStyle('#336699', base_style = DS, step=5) 
-	wm = World(style = wm_style)
+	wm = World(style = customstyle)
 	wm.add('< 100,000', COVID_rates_1)
 	wm.add('< 1,000,000', COVID_rates_2)
 	wm.add('< 10,000,000', COVID_rates_3)
@@ -195,8 +197,8 @@ def convert_to_gif():
 if __name__ == '__main__':
 	initial_setup()
 	convert_to_gif()
-	time.sleep(86400)
-	while True:
-		get_daily_updates(url)
-		convert_to_gif()
-		time.sleep(86400)
+	# time.sleep(86400)
+	# while True:
+	# 	get_daily_updates(url)
+	# 	convert_to_gif()
+	# 	time.sleep(86400)
